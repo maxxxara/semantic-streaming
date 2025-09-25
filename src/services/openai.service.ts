@@ -6,14 +6,14 @@ import { zodTextFormat } from "openai/helpers/zod";
 
 dotenv.config();
 
-const Citycard = z.object({
+export const Citycard = z.object({
   country: z.string(),
   city: z.string(),
   note: z.string(),
   activities: z.array(z.string()),
 });
 
-const CityCardArray = z.object({
+export const CityCardArray = z.object({
   cards: z.array(Citycard),
 });
 
@@ -21,7 +21,7 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-function isJsonValid(str: string) {
+export function isJsonValid(str: string) {
   try {
     JSON.parse(str);
     return true;
@@ -30,7 +30,7 @@ function isJsonValid(str: string) {
   }
 }
 
-function createValidPartialJson(rawJson: string): string {
+export function createValidPartialJson(rawJson: string): string {
   try {
     // First try to parse as-is
     JSON.parse(rawJson);

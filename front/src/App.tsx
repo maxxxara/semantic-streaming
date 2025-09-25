@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import Card from "./Card";
+import { useState } from "react";
 import Openai from "./Openai";
 import Langchain from "./Langchain";
+import Langgraph from "./Langgraph";
 
 export interface ICard {
   country: string;
@@ -11,7 +11,9 @@ export interface ICard {
 }
 
 function App() {
-  const [tab, setTab] = useState<"openai" | "langchain">("openai");
+  const [tab, setTab] = useState<"openai" | "langchain" | "langgraph">(
+    "langgraph"
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -38,12 +40,23 @@ function App() {
             >
               Langchain
             </button>
+            <button
+              onClick={() => setTab("langgraph")}
+              className={`px-6 py-2 rounded-md font-medium transition-all duration-200 ${
+                tab === "langgraph"
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+              }`}
+            >
+              Langgraph
+            </button>
           </div>
         </div>
       </div>
       <div className="max-w-6xl mx-auto px-4 py-8">
         {tab === "openai" && <Openai />}
         {tab === "langchain" && <Langchain />}
+        {tab === "langgraph" && <Langgraph />}
       </div>
     </div>
   );

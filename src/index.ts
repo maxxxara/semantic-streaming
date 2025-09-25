@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import { streamWithOpenAI } from "./services/openai.service";
 import { streamWithLangchain } from "./services/langchain.service";
+import { createGraph } from "./services/langgraph.service";
 dotenv.config();
 const app = express();
 const port = 3000;
@@ -18,6 +19,31 @@ app.use((_req, res, next) => {
 
 app.get("/", async (_req, res) => {
   res.send("Smart Stream API - Use /stream endpoint for streaming responses");
+});
+
+app.get("/stream-langgraph", async (req, res) => {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  const graph = createGraph();
+
+  try {
+    // Stream graph execution - each node outputs as it completes
+    for await (const event of graph.streamEvents({}, { version: "v2" })) {
+      if (event.event === "on_custom_event") {
+        if (event.name === "stream_text") {
+          res.write(`data: ${JSON.stringify({ content: event.data })}\n\n`);
+        }
+      }
+    }
+    res.write(`data: ${JSON.stringify({ content: "[DONE]" })}\n\n`);
+  } catch (error) {
+    console.error("Streaming error:", error);
+  } finally {
+    res.end();
+  }
 });
 
 app.get("/stream", async (req, res) => {
